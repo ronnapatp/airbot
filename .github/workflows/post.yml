@@ -1,0 +1,26 @@
+name: Post
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '1 0 * * *'
+
+
+jobs:
+  deployment:
+
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm install
+    - run: cp .env.example .env
+    - run: echo "ACCESS_TOKEN=${{ secrets.ACCESS_TOKEN }}" >> .env
+    - run: echo "PAGE_ID=${{ secrets.PAGE_ID }}" >> .env
+    - run: echo "AIR_API_KEY=${{ secrets.AIR_API_KEY }}" >> .env
+    - run: node index.mjs
